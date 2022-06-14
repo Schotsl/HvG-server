@@ -1,5 +1,6 @@
 export interface Listener {
-  uuid: string;
+  short?: string;
+  other?: WebSocket;
   client: WebSocket;
 }
 
@@ -8,4 +9,9 @@ export interface Patch {
   w: number; // y_speed;
   e: number; // x_pos;
   f: number; // y_pos;
+}
+
+export interface Action {
+  action: string;
+  short: string;
 }
