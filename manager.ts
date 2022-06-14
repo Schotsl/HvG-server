@@ -53,20 +53,20 @@ class Manager {
   }
 
   recieveHosting(listener: Listener, data: Action) {
-    const { short } = data;
+    const { code } = data;
 
     // Should probably validate the short code and check for duplicates
-    listener.short = short;
+    listener.code = code;
   }
 
   recieveSubscribing(listener: Listener, data: Action) {
-    const { short } = data;
+    const { code } = data;
 
-    const other = this.listeners.find((listener) => listener.short === short);
+    const other = this.listeners.find((listener) => listener.code === code);
 
-    // If no one is hosting a game with this short code
+    // If no one is hosting a game with this code
     if (!other) {
-      // Send a message to the client that the short code is invalid
+      // Send a message to the client that the code is invalid
       this.sendSucces(listener.client, false);
 
       // Abort the function
@@ -77,7 +77,7 @@ class Manager {
     listener.other = other.client;
 
     // Bind the subscriber party to the hoster and store the code for reconnecting
-    other.short = short;
+    other.code = code;
     other.other = listener.client;
 
     // Notify the clients of their successful connection

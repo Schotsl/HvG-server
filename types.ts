@@ -1,5 +1,5 @@
 export interface Listener {
-  short?: string;
+  code?: string;
   other?: WebSocket;
   client: WebSocket;
 }
@@ -12,6 +12,6 @@ export interface Patch {
 }
 
 export interface Action {
+  code: string;
   action: string;
-  short: string;
 }
