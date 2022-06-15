@@ -49,7 +49,9 @@ class Manager {
   recievePatch(listener: Listener, data: string) {
     const other = listener.other;
 
-    this.sendPatch(other!, data);
+    if (other) {
+      this.sendPatch(other, data);
+    }
   }
 
   recieveHosting(listener: Listener, data: Action) {
