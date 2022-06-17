@@ -22,6 +22,9 @@ class Manager {
           case Type.Subscribe:
             this.recieveSubscribing(listener, body);
             break;
+          default:
+            this.recievePatch(listener, event.data);
+            break;
         }
 
         return;
