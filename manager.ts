@@ -1,4 +1,4 @@
-import { Action, Listener } from "./types.ts";
+import { Action, Listener, Type } from "./types.ts";
 
 class Manager {
   listeners: Listener[] = [];
@@ -11,15 +11,15 @@ class Manager {
     client.onmessage = (event) => {
       const data = event.data;
 
-      if (data.includes("action")) {
+      if (data.includes("type")) {
         const body = JSON.parse(data) as Action;
-        const action = body.action;
+        const type = body.type;
 
-        switch (action) {
-          case "hosting":
+        switch (type) {
+          case Type.Hosting:
             this.recieveHosting(listener, body);
             break;
-          case "subscribing":
+          case Type.Subscribe:
             this.recieveSubscribing(listener, body);
             break;
         }

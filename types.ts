@@ -13,5 +13,14 @@ export interface Patch {
 
 export interface Action {
   code: string;
-  action: string;
+  type: Type;
+}
+
+export enum Type
+{
+    Clue = 0,
+    Laser = 1,
+    Hosting = 2,
+    Position = 3,
+    Subscribe = 4,
 }
