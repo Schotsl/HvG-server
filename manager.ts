@@ -34,8 +34,8 @@ class Manager {
     }
   }
 
-  sendSuccess(client: WebSocket, success = true) {
-    const data = { success };
+  sendSuccess(client: WebSocket, type: Type, success = true) {
+    const data = { success, type };
     const body = JSON.stringify(data);
 
     this.sendData(client, body);
@@ -64,7 +64,7 @@ class Manager {
     // If no one is hosting a game with this code
     if (!other) {
       // Send a message to the client that the code is invalid
-      this.sendSuccess(listener.client, false);
+      this.sendSuccess(listener.client, Type.Subscribe, false);
 
       // Abort the function
       return;
@@ -78,8 +78,8 @@ class Manager {
     other.other = listener.client;
 
     // Notify the clients of their successful connection
-    this.sendSuccess(other.client, true);
-    this.sendSuccess(listener.client, true);
+    this.sendSuccess(other.client, Type.Hosting, true);
+    this.sendSuccess(listener.client, Type.Subscribe, true);
   }
 }
 
