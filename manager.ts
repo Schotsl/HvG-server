@@ -1,4 +1,4 @@
-import { Action, Listener, Type } from "./types.ts";
+import { Listener, Type, Update } from "./types.ts";
 
 class Manager {
   listeners: Listener[] = [];
@@ -10,61 +10,53 @@ class Manager {
 
     client.onmessage = (event) => {
       const data = event.data;
+      const body = JSON.parse(data) as Update;
+      const type = body.type;
 
-      if (data.includes("type")) {
-        const body = JSON.parse(data) as Action;
-        const type = body.type;
-
-        switch (type) {
-          case Type.Hosting:
-            this.recieveHosting(listener, body);
-            break;
-          case Type.Subscribe:
-            this.recieveSubscribing(listener, body);
-            break;
-          default:
-            this.recievePatch(listener, event.data);
-            break;
-        }
-
-        return;
+      switch (type) {
+        case Type.Hosting:
+          this.receiveHosting(listener, body);
+          break;
+        case Type.Subscribe:
+        case Type.Restoring:
+          this.receiveSubscribing(listener, body);
+          break;
+        default:
+          this.receiveRelay(listener, event.data);
+          break;
       }
-
-      this.recievePatch(listener, event.data);
     };
   }
 
-  sendPatch(client: WebSocket, data: string) {
+  sendData(client: WebSocket, data: string) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(data);
     }
   }
 
-  sendSucces(client: WebSocket, success = true) {
-    if (client.readyState === WebSocket.OPEN) {
-      const data = { success };
-      const body = JSON.stringify(data);
+  sendSuccess(client: WebSocket, success = true) {
+    const data = { success };
+    const body = JSON.stringify(data);
 
-      client.send(body);
-    }
+    this.sendData(client, body);
   }
 
-  recievePatch(listener: Listener, data: string) {
+  receiveRelay(listener: Listener, data: string) {
     const other = listener.other;
 
     if (other) {
-      this.sendPatch(other, data);
+      this.sendData(other, data);
     }
   }
 
-  recieveHosting(listener: Listener, data: Action) {
+  receiveHosting(listener: Listener, data: Update) {
     const { code } = data;
 
     // Should probably validate the short code and check for duplicates
     listener.code = code;
   }
 
-  recieveSubscribing(listener: Listener, data: Action) {
+  receiveSubscribing(listener: Listener, data: Update) {
     const { code } = data;
 
     const other = this.listeners.find((listener) => listener.code === code);
@@ -72,7 +64,7 @@ class Manager {
     // If no one is hosting a game with this code
     if (!other) {
       // Send a message to the client that the code is invalid
-      this.sendSucces(listener.client, false);
+      this.sendSuccess(listener.client, false);
 
       // Abort the function
       return;
@@ -86,8 +78,8 @@ class Manager {
     other.other = listener.client;
 
     // Notify the clients of their successful connection
-    this.sendSucces(other.client, true);
-    this.sendSucces(listener.client, true);
+    this.sendSuccess(other.client, true);
+    this.sendSuccess(listener.client, true);
   }
 }
 
