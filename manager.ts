@@ -50,15 +50,14 @@ class Manager {
   }
 
   receiveHosting(listener: Listener, data: Update) {
-    const { code } = data;
-
+    const code = data?.toLowerCase();
+    
     // Should probably validate the short code and check for duplicates
     listener.code = code;
   }
 
   receiveSubscribing(listener: Listener, data: Update) {
-    const { code } = data;
-
+    const code = data?.toLowerCase();
     const other = this.listeners.find((listener) => listener.code === code);
 
     // If no one is hosting a game with this code
