@@ -59,7 +59,9 @@ class Manager {
   receiveSubscribing(listener: Listener, data: Update) {
     const { code } = data;
 
-    const other = this.listeners.find((listener) => listener.code === code.toLowerCase());
+    const other = this.listeners.find((listener) =>
+      listener.code === code.toLowerCase()
+    );
 
     // If no one is hosting a game with this code
     if (!other) {
